@@ -19,9 +19,10 @@ function onConnect() {
     }
 
     client.on('message', (topic, buffer) => {
+        const ts = Date.now();
         let sensor = topicMatch(topic) ?? propMatch(buffer);
         if (!sensor) {
-            console.debug(`Non-configured sensor: ${topic}`);
+//            console.debug(`Non-configured sensor: ${topic}`);
             return;
         }
 
@@ -37,9 +38,9 @@ function onConnect() {
             const data = sensorConfig.parser.parse(topic, buffer);
             for(const [measurement, rawValue] of Object.entries(data)) {
                 const topic = `${sensorConfig.publish}/${measurement}`;
-                const value = ({timestamp: Date.now(), value: rawValue});
+                const value = ({timestamp: ts, value: rawValue});
 
-                console.debug(`publishing value ${JSON.stringify(value)} to topic ${topic}`);
+//                console.debug(`publishing value ${JSON.stringify(value)} to topic ${topic}`);
                 client.publish(topic, JSON.stringify(value), {retain: true});
             }
         }
